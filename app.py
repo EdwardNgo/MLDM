@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request,jsonify
 import pickle
 import os
 import glob
@@ -8,14 +8,17 @@ from underthesea import word_tokenize
 import gensim
 from sklearn.decomposition import TruncatedSVD
 
+MODEL = "model"
 MODEL_PATH = "model/svm.pkl"
 WORD_EMBEDDING = "model/tfidf.pkl"
 DATA_TRANSFORM = "model/tfidfdata.pkl"
+SVD = "model/svd_data.pkl"
 clf = pickle.load(open(MODEL_PATH,"rb"))
 tfidf_vect = pickle.load(open(WORD_EMBEDDING,"rb"))
 tfidf_data = pickle.load(open(DATA_TRANSFORM,"rb"))
-svd = TruncatedSVD(n_components=300, random_state=42)
-svd.fit(tfidf_data)
+# svd = TruncatedSVD(n_components=300, random_state=42)
+# svd.fit(tfidf_data)
+svd = pickle.load(open(SVD,"rb"))
 
 app = Flask(__name__)
 
@@ -27,32 +30,61 @@ def preprocess(document):
     svd_vect = svd.transform(tfidf_vectorize)
     return svd_vect
 
-@app.route('/get-category/<text>',methods = ['GET'])
-def text_classify(text):
-    text = preprocess(text)
-    print(text)
+def preprocess_nb(document):
+    document = ' '.join(gensim.utils.simple_preprocess(document))
+    document = word_tokenize(document, format="text")
+    print(document)
+    tfidf_vectorize = tfidf_vect.transform([document])
+    return tfidf_vectorize
+
+@app.route('/get-category',methods = ['GET'])
+def text_classify():
+    document = request.args.get('document')
+    print(document)
     # print(clf.predict_proba(text))
+    document_vect = preprocess(document)
+    label = clf.predict(document_vect)
+
+    return {"content":document,"label":str(label[0])}
+
+@app.route('/classification',methods=["GET"])
+def init():
+    # fetch available trained models
+    try:
+        print("Hi")
+        trained_models = os.listdir(MODEL)
+        # trained_models = ["model/"+fname for fname in trained_models]
+        response = jsonify(trained_model=tuple(trained_models))
+        response.headers.add("Access-Control-Allow-Origin", "*")
+
+        return response
+    except:
+        return "500"
+
+@app.route('/classification/predict/<model>',methods=["POST"])
+def handle_predict_request(model):
+    clf = pickle.load(open("model/"+model,"rb"))
+    requested_data = request.get_json()
+    input = requested_data['input']
+    # f = open(TEST_FILE_PATH, "w",encoding='utf-16-le')
+    # f.write(input)
+    # f.close()
+    # pred = Predictor()
+    if "nb.pkl" in model:
+        input_vect = preprocess_nb(input)
+    else:
+        input_vect = preprocess(input)
+    label = clf.predict(input_vect)
+    try:
+        return label[0]
+    except:
+        return "500"
 
 if __name__ == '__main__':
-    test = """
-Thủ thành Manuel Neuer tự tin với khả năng ngược dòng của Bayern Munich khi đá lượt về tứ kết Champions League với PSG tối 13/4.
+#     test = """
+#  """
+#     print(preprocess(test))
+#     res = clf.predict(preprocess(test))
+#     print(res)
 
-* PSG - Barca: 2h thứ Tư 14/4, giờ Hà Nội.
-
-"Chúng tôi cần cái đầu lạnh và trái tim nóng. Trước những cầu thủ nhanh nhẹn của PSG, chúng tôi cần tiếp cận hợp lý, với thái độ thi đấu tích cực, ổn định và giàu động lực", Neuer nói trên trang Bundesliga. "Chúng tôi cần bình tĩnh, tấn công và gây áp lực cho PSG. Họ có những vấn đề ở hàng thủ. Nếu tạo được nhiều cơ hội như trận lượt đi, chúng tôi có thể ngược dòng".
-
-Bayern dứt điểm 31 lần nhưng chỉ ghi được hai bàn vào lưới PSG ở lượt đi tứ kết trên sân Allianz hôm 7/4. Ảnh: LÉquipe
-Bayern dứt điểm 31 lần nhưng chỉ ghi được hai bàn vào lưới PSG ở lượt đi tứ kết trên sân Allianz hôm 7/4. Ảnh: L'Équipe.
-
-Lượt đi giữa tuần trước, Bayern thua PSG 2-3 ngay trên sân nhà Allianz Arena. Để vào bán kết, họ cần thắng cách biệt một bàn nhưng từ tỷ số 4-3 trở lên, hoặc cách biệt tối thiểu hai bàn trên sân Công viên các Hoàng tử. Tuy nhiên, Bayern vẫn vắng tiền đạo chủ lực Robert Lewandowski do chấn thương. Tiền đạo cánh Serge Gnabry cũng phải nghỉ trận thứ hai liên tiếp ở Champions League do chưa hết Covid-19.
-
-Ngoài ra, theo cựu danh thủ Lothar Matthaus, đương kim vô địch Bayern còn gặp vấn đề trong cách vận hành lối chơi. Ông nhận xét: "Bayern luôn chấp nhận mạo hiểm, nhưng khi mất bóng, họ không còn chắc chắn như mùa trước. Họ cũng thiếu tốc độ và sự khôn khéo".
-
-Trái lại, PSG chỉ có một mối bận tâm về nhân sự là chấn thương của Marquinhos. Trong trận thắng Strassbourg 4-1 tại Ligue I tuần trước, trung vệ thủ quân người Brazil phải ngồi ngoài.
-
-Điểm mạnh của PSG là cặp tiền đạo Neymar - Kylian Mbappe. Ở lượt đi, Mbappe lập cú đúp, còn Neymar góp hai kiến tạo. Nếu duy trì được lợi thế trước Bayern, họ sẽ vào bán kết và gặp đội thắng trong cặp Dortmund - Man City. Ở lượt đi, Man City thắng 2-1 trên sân nhà Etihad.
- """
-    print(preprocess(test))
-    res = clf.predict(preprocess(test))
-    print(res)
-    # app.run()
+    app.run()
