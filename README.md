@@ -46,12 +46,12 @@ To get a local copy up and running follow these simple steps.
 
 This is an example of how to list things you need to use the software and how to install them.
 * **Preprocessed Data**
-Download at: https://drive.google.com/drive/folders/1iX4VklC9gxY6DbFEcaKvuZAgx9mvntXo?usp=sharing
+  Download at: https://drive.google.com/drive/folders/1iX4VklC9gxY6DbFEcaKvuZAgx9mvntXo?usp=sharing
 * **Raw Data**
-Download at: https://github.com/duyvuleo/VNTC
+  Download at: https://github.com/duyvuleo/VNTC
 * **Model And Text Embedding**
-Download at: https://drive.google.com/file/d/17CeL37I9ldj4y445EHRFQuwRSf34oQb8/view?usp=sharing
-Include: svm model, naive bayes model, neural-net model, tfidf vector, svd vector
+  Download at: https://drive.google.com/file/d/17CeL37I9ldj4y445EHRFQuwRSf34oQb8/view?usp=sharing
+  Include: svm model, naive bayes model, neural-net model, tfidf vector, svd vector
 
 ### Installation
 
