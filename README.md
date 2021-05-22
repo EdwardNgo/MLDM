@@ -45,38 +45,33 @@ To get a local copy up and running follow these simple steps.
 ### Prerequisites
 
 This is an example of how to list things you need to use the software and how to install them.
-* **Detectron2**
-
-Requirment
--   CUDA=10.1
--   Pytorch >= 1.7.0
-
-How to install CUDA 10.1 can be found here: https://developer.nvidia.com/cuda-10.1-download-archive-base
-
-How to install Pytorch can be found here: https://pytorch.org/
-
-After installed above package, follow the instructions below to install detectron2:
-
-```
-$   pip install cython pyyaml==5.1
-$   pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu100/index.html
-
-```
-After installed detectron2, run:
-
-```
-$   pip install -r requirments.txt
-```
+* **Preprocessed Data**
+Download at: https://drive.google.com/drive/folders/1iX4VklC9gxY6DbFEcaKvuZAgx9mvntXo?usp=sharing
+* **Raw Data**
+Download at: https://github.com/duyvuleo/VNTC
+**Model And Text Embedding**
+Download at:
 
 ### Installation
 
 1. Clone the repo
 ```sh
-git clone https://github.com/Wild-Rift/Document-Layout-Analysis.git
+git clone https://github.com/EdwardNgo/MLDM
 ```
 
-2. Run demo 
+2. Install python packages
 
 ```sh
-streamlit run virtualize.py
+pip install -r requirements.txt
+```
+3. Install frontend packages
+```sh
+cd react-complete-guide
+npm install
+```
+4. If you dont want train model yourself run script in ipynb file: MLDM.ipynb, TextClassification.ipynb
+5. If you download my model
+```sh
+python app.py
+cd react-complete-guide && npm run start
 ```
