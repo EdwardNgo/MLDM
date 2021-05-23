@@ -76,7 +76,8 @@ npm install
 ```
 4. If you dont want train model yourself run script in ipynb file: MLDM.ipynb, TextClassification.ipynb
 
-Link colab for train notebook: https://colab.research.google.com/drive/1-LHQdwu69mvCKsP6pQFHi9EMuwiBPcGg?usp=sharing,
+Link colab for train notebook: 
+https://colab.research.google.com/drive/1-LHQdwu69mvCKsP6pQFHi9EMuwiBPcGg?usp=sharing,
 https://colab.research.google.com/drive/1ELORh6xi9rbZmpDXHxTo6NOhKtI0kuaM?usp=sharing
 
 
